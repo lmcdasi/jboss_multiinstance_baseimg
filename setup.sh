@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-echo "Jboss total no. of instances set to: ${TOTAL_JBOSS_INSTANCES}"
+logger -t "jboss_multi-instance" "Jboss total no. of instances set to: ${TOTAL_JBOSS_INSTANCES}"
 if [ ${TOTAL_JBOSS_INSTANCES} -lt 1 ]; then
-   echo "Invalid no. of jboss instances. Exiting..."
+   logger -t "jboss_multi-instance" "Invalid no. of jboss instances. Exiting..."
    exit -1
 fi
 
@@ -12,7 +12,7 @@ for no in 1 ${TOTAL_JBOSS_INSTANCES}; do
 	useradd -m -d ${INSTANCE_HOME=} -s /bin/bash jinstance${no}
 	echo "jinstance${no}:jinstance${no}" | chpasswd
 	echo "jinstance${no} ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers
-	usermod -a -g jboss jinstance${no}
+	usermod -a -G jboss jinstance${no}
 	
 	pushd ${INSTANCE_HOME}
 
@@ -47,9 +47,7 @@ for no in 1 ${TOTAL_JBOSS_INSTANCES}; do
 	chown -R jinstance${no}:jinstance${no} ${INSTANCE_HOME}
 	
 	# Add mgmt & app user realms
-	export JAVA_OPTS="-Djboss.server.config.user.dir=${JBOSS_INSTANCE_HOME}/configuration"
-	${JBOSS_HOME}/bin/add-user.sh -Djboss.server.config.user.dir=${JBOSS_INSTANCE_HOME}/configuration ${APP_USER}${no} ${APP_USER_PASSWD}${no}
-	${JBOSS_HOME}/bin/add-user.sh -a -Djboss.server.config.user.dir=${JBOSS_INSTANCE_HOME}/configuration ${MGMT_USER}${no} ${MGMT_USER_PASSWD}${no}
+	sudo -u jinstance${no} -- bash -c "export JAVA_OPTS=\"-Djboss.server.config.user.dir=${JBOSS_INSTANCE_HOME}/configuration\"; ${JBOSS_HOME}/bin/add-user.sh ${APP_USER}${no} ${APP_USER_PASSWD}${no} && ${JBOSS_HOME}/bin/add-user.sh -a ${MGMT_USER}${no} ${MGMT_USER_PASSWD}${no}"
 
 	popd
 done

@@ -24,8 +24,11 @@ RUN cd $HOME \
     && mv $HOME/wildfly-$WILDFLY_VERSION $JBOSS_HOME \
     && rm wildfly-$WILDFLY_VERSION.tar.gz \
     && chown -R jboss:jboss ${JBOSS_HOME} \
-    && chmod -R g+rw ${JBOSS_HOME} \
-    && yum install -y sudo
+    && chmod -R g+rw ${JBOSS_HOME}
+
+# Add pkgs
+RUN yum install -y sudo \
+    && yum install -y net-tools.x86_64
 
 # Copy setup scripts
 COPY setup.sh /root/.
@@ -34,7 +37,9 @@ COPY standalone.conf /root/.
 COPY jboss_startup.sh /root/.
 
 # Create & setup standalone jboss instances
-RUN /root/setup.sh
+RUN chmod +x /root/setup.sh \
+    && /root/setup.sh
+RUN chmod +x /root/jboss_startup.sh
 
 # Expose a range of ports to cover all jboss instances
 EXPOSE 7000-9999
@@ -42,3 +47,4 @@ EXPOSE 7000-9999
 # Set the default command to run on boot
 # This will boot WildFly standalone for each instance
 CMD ["/root/jboss_startup.sh"]
+
