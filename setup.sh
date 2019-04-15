@@ -20,6 +20,7 @@ for no in 1 ${TOTAL_JBOSS_INSTANCES}; do
 	echo "export instance_no=${no}" >> .bashrc
         echo "#JBOSS bind address - using hostname" >> .bashrc
         echo 'export JBOSS_BIND_ADDRESS=$(hostname)' >> .bashrc
+	echo 'export JBOSS_BIND_ADDRESS_MANAGEMENT=$(hostname)' >> .bashrc
 	
 	JBOSS_INSTANCE_HOME="${INSTANCE_HOME}/jboss_instance"
 	mkdir -p ${JBOSS_INSTANCE_HOME}/bin/
