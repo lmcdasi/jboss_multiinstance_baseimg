@@ -17,5 +17,5 @@ Setup scripts:
 Startup script:
    -- jboss_startup.sh
 
-Run the container in detached mode using '-d', then exec another container in bash
+Run the image in detached mode using '-d', then exec running container in bash
    
