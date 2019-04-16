@@ -1,7 +1,12 @@
-# Use latest jboss/base-jdk:11 image as the base
+# Use latest jboss/base-jdk:11 image as base
 FROM jboss/base-jdk:11
 
-# Set the WILDFLY_VERSION env variable
+LABEL version="1.0"
+LABEL descpription="Jboos Wildfly multi-instance setup.\
+Base example with 2 instances that can be extended up to 100"
+LABEL maintainer="lmcdasi@yahoo.com"
+
+# Set WILDFLY_VERSION env variable
 ENV WILDFLY_VERSION 16.0.0.Final
 ENV WILDFLY_SHA1 287c21b069ec6ecd80472afec01384093ed8eb7d
 ENV JBOSS_HOME /opt/jboss/wildfly-16.0.0.Final
@@ -26,7 +31,7 @@ RUN cd $HOME \
     && chown -R jboss:jboss ${JBOSS_HOME} \
     && chmod -R g+rw ${JBOSS_HOME}
 
-# Add pkgs
+# Add extra pkgs
 RUN yum install -y sudo \
     && yum install -y net-tools.x86_64
 
@@ -41,7 +46,7 @@ RUN chmod +x /root/setup.sh \
     && /root/setup.sh
 RUN chmod +x /root/jboss_startup.sh
 
-# Expose a range of ports to cover all jboss instances
+# Expose a range of ports to cover all 100 jboss instances
 EXPOSE 7000-9999
 
 # Set the default command to run on boot
